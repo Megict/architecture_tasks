@@ -29,9 +29,9 @@
 ### Результаты
 
     Исходный код лежит в ./main_diags.dsl
+    Описание api лежит в ./components_api.md
     Динамические диаграммы лежат по адресу ./diags_imgs/dynamic
     Диаграммы компонентов лежат по адресу ./diags_imgs/components
-    **Описание надо сделать**  
 
 #### Контекстная диаграмма:
 ![](./diags_imgs/structurizr-Context_diagram.png)
