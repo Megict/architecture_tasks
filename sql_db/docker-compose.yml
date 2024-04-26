@@ -1,0 +1,22 @@
+version: "latest"
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "shop_db"
+      POSTGRES_USER: "mxcitn"
+      POSTGRES_PASSWORD: "1234"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - C:\Users\max\Desktop\arch\lab2\:/docker-entrypoint-initdb.d
+      - my-pg-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  my-pg-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: 'C:\\Users\\max\\Desktop\\arch\\lab2\\data'
