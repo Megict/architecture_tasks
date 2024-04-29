@@ -7,7 +7,6 @@ from datetime import timedelta
 import bcrypt
 from tqdm import tqdm
 
-salt = bcrypt.gensalt()
 rwg = RandomWords()
 
 PROD_CNT = 100 # сколько товаров добавить
@@ -30,6 +29,7 @@ def create_random_user():
     password = rwg.get_random_word()
 
     user_name = rwg.get_random_word()
+    salt = bcrypt.gensalt()
     passwor_hash = bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
     
     name_first = names.get_first_name()
@@ -39,7 +39,7 @@ def create_random_user():
     for _ in range(random.choice([1,1,1,1,2,2,3,4,5])):
         baskets.append(create_random_basket())
 
-    return user_name, passwor_hash, name_first, name_last, baskets
+    return user_name, passwor_hash, salt.decode('utf-8'), name_first, name_last, baskets
 
 try:
     # пытаемся подключиться к базе данных
@@ -63,12 +63,12 @@ if conn is not None:
 
     for _ in tqdm(range(USER_CNT)):
         random_user_data = create_random_user()
-        cursor.execute(f"INSERT INTO users (username, pword_hash, name_first, name_last)\
-                            VALUES {random_user_data[0:4]};")
+        cursor.execute(f"INSERT INTO users (username, pword_hash, pword_salt, name_first, name_last)\
+                            VALUES {random_user_data[0:5]};")
         cursor.execute("SELECT id FROM users ORDER BY id desc limit 1")
         # добавляем корзины для этого пользователя
         user_id = cursor.fetchall()[0][0]
-        for basket in random_user_data[4]:
+        for basket in random_user_data[5]:
             if basket[1] is None:
                 cursor.execute(f"INSERT INTO baskets (owner_user_id, time_opened)\
                                     VALUES {user_id, str(basket[0])};")
