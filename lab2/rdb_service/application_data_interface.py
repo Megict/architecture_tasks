@@ -7,7 +7,7 @@ import psycopg2
 import bcrypt
 
 
-conn = psycopg2.connect(dbname='shop_db', user='mxcitn', password='1234')
+conn = psycopg2.connect(dbname='shop_db', user='mxcitn', password='1234', host="postgres")
 cursor = conn.cursor()
 
 app = FastAPI()
