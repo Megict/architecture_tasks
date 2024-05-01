@@ -48,6 +48,7 @@ CREATE TABLE public.basket_to_product
     id serial NOT NULL,
     basket_id bigint NOT NULL,
     product_id bigint NOT NULL,
+    product_amount bigint NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (basket_id) REFERENCES public.baskets (id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES public.products (id) ON DELETE CASCADE
