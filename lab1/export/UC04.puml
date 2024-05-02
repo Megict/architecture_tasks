@@ -13,7 +13,7 @@ skinparam {
 
 hide stereotype
 
-skinparam rectangle<<Магазин.Базаданных>> {
+skinparam rectangle<<Магазин.БазаданныхSQL>> {
   BackgroundColor #dddddd
   FontColor #000000
   BorderColor #9a9a9a
@@ -26,12 +26,6 @@ skinparam rectangle<<Магазин.Вебприложение>> {
   shadowing false
 }
 skinparam rectangle<<Магазин.Клиенты>> {
-  BackgroundColor #dddddd
-  FontColor #000000
-  BorderColor #9a9a9a
-  shadowing false
-}
-skinparam rectangle<<Магазин.Корзины>> {
   BackgroundColor #dddddd
   FontColor #000000
   BorderColor #9a9a9a
@@ -50,17 +44,14 @@ skinparam rectangle<<Магазин>> {
 }
 
 rectangle "Магазин\n<size:10>[Software System]</size>" <<Магазин>> {
-  rectangle "==База данных\n<size:10>[Container: PostgreSQL]</size>\n\nСервис работы с базой данных" <<Магазин.Базаданных>> as Магазин.Базаданных
+  rectangle "==База данных SQL\n<size:10>[Container: PostgreSQL]</size>\n\nСервис работы с SQL базой данных" <<Магазин.БазаданныхSQL>> as Магазин.БазаданныхSQL
   rectangle "==Веб-приложение\n<size:10>[Container: Dash, Flask, Python]</size>\n\nСервис, с которым взаимодействует клиент" <<Магазин.Вебприложение>> as Магазин.Вебприложение
   rectangle "==Клиенты\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы с данными клиента" <<Магазин.Клиенты>> as Магазин.Клиенты
-  rectangle "==Корзины\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы с корзинами" <<Магазин.Корзины>> as Магазин.Корзины
 }
 
 rectangle "==Покупатель\n<size:10>[Person]</size>" <<Покупатель>> as Покупатель
 
-Покупатель .[#707070,thickness=2].> Магазин.Вебприложение : "<color:#707070>1. Добавить в корзину\n<color:#707070><size:8>[HTTPS]</size>"
-Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Клиенты : "<color:#707070>2. Узнать id активной корзины этого пользователя (GET user_api/get_user_basket_id)\n<color:#707070><size:8>[JSON/HTTPS]</size>"
-Магазин.Клиенты .[#707070,thickness=2].> Магазин.Базаданных : "<color:#707070>3. Взять данные о корзине пользователя из бд (SELECT b_id FROM users_to_baskets WHERE u_id={?} AND is_active=true)\n<color:#707070><size:8>[SQL]</size>"
-Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Корзины : "<color:#707070>4. Добавить товар в корзину (POST baskets_api/add_product_to_basket)\n<color:#707070><size:8>[JSON/HTTPS]</size>"
-Магазин.Корзины .[#707070,thickness=2].> Магазин.Базаданных : "<color:#707070>5. Модифицировать корзину в бд (INSERT INTO baskets_to_products (b_id, p_id) VALUES (?, ?))\n<color:#707070><size:8>[SQL]</size>"
+Покупатель .[#707070,thickness=2].> Магазин.Вебприложение : "<color:#707070>1. Найти пользователя по ФИО\n<color:#707070><size:8>[HTTPS]</size>"
+Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Клиенты : "<color:#707070>2. Выполнить запрос за данными пользователя  (POST user_api/find_user_data)\n<color:#707070><size:8>[JSON/HTTPS]</size>"
+Магазин.Клиенты .[#707070,thickness=2].> Магазин.БазаданныхSQL : "<color:#707070>3. Запрос данных о пользователе (SELECT * FROM users WHERE LOWER(name_first) LIKE '% ? %' AND ...)\n<color:#707070><size:8>[SQL]</size>"
 @enduml

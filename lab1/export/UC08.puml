@@ -51,7 +51,7 @@ rectangle "Магазин\n<size:10>[Software System]</size>" <<Магазин>>
 
 rectangle "==Покупатель\n<size:10>[Person]</size>" <<Покупатель>> as Покупатель
 
-Покупатель .[#707070,thickness=2].> Магазин.Вебприложение : "<color:#707070>1. Найти пользователя по логину\n<color:#707070><size:8>[HTTPS]</size>"
-Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Клиенты : "<color:#707070>2. Выполнить запрос за данными пользователя (POST user_api/produce_user_data)\n<color:#707070><size:8>[JSON/HTTPS]</size>"
-Магазин.Клиенты .[#707070,thickness=2].> Магазин.БазаданныхSQL : "<color:#707070>3. Запрос данных о пользователе (SELECT * FROM users WHERE uname={?} )\n<color:#707070><size:8>[SQL]</size>"
+Покупатель .[#707070,thickness=2].> Магазин.Вебприложение : "<color:#707070>1. Получить данные о корзине\n<color:#707070><size:8>[HTTPS]</size>"
+Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Клиенты : "<color:#707070>2. Узнать id активной корзины этого пользователя (GET user_api/get_user_basket_id)\n<color:#707070><size:8>[JSON/HTTPS]</size>"
+Магазин.Клиенты .[#707070,thickness=2].> Магазин.БазаданныхSQL : "<color:#707070>3. Взять данные о корзине пользователя из бд (SELECT b_id FROM users_to_baskets WHERE u_id={?} AND is_active=true)\n<color:#707070><size:8>[SQL]</size>"
 @enduml

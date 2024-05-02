@@ -13,7 +13,13 @@ skinparam {
 
 hide stereotype
 
-skinparam rectangle<<Магазин.Базаданных>> {
+skinparam rectangle<<Магазин.БазаданныхNoSQL>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.БазаданныхSQL>> {
   BackgroundColor #dddddd
   FontColor #000000
   BorderColor #9a9a9a
@@ -32,6 +38,12 @@ skinparam rectangle<<Магазин.Клиенты>> {
   shadowing false
 }
 skinparam rectangle<<Магазин.Корзины>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Кэш>> {
   BackgroundColor #dddddd
   FontColor #000000
   BorderColor #9a9a9a
@@ -72,7 +84,9 @@ rectangle "==Система обработки заказов\n<size:10>[Softwar
 rectangle "==Склад\n<size:10>[Software System]</size>\n\nСистма склада товаров" <<Склад>> as Склад
 
 rectangle "Магазин\n<size:10>[Software System]</size>" <<Магазин>> {
-  rectangle "==База данных\n<size:10>[Container: PostgreSQL]</size>\n\nСервис работы с базой данных" <<Магазин.Базаданных>> as Магазин.Базаданных
+  rectangle "==База данных SQL\n<size:10>[Container: PostgreSQL]</size>\n\nСервис работы с SQL базой данных" <<Магазин.БазаданныхSQL>> as Магазин.БазаданныхSQL
+  rectangle "==База данных NoSQL\n<size:10>[Container: MongoDB]</size>\n\nСервис работы с NoSQL базой данных" <<Магазин.БазаданныхNoSQL>> as Магазин.БазаданныхNoSQL
+  rectangle "==Кэш\n<size:10>[Container: Redis]</size>\n\nСервис кэша пользователей" <<Магазин.Кэш>> as Магазин.Кэш
   rectangle "==Веб-приложение\n<size:10>[Container: Dash, Flask, Python]</size>\n\nСервис, с которым взаимодействует клиент" <<Магазин.Вебприложение>> as Магазин.Вебприложение
   rectangle "==Клиенты\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы с данными клиента" <<Магазин.Клиенты>> as Магазин.Клиенты
   rectangle "==Корзины\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы с корзинами" <<Магазин.Корзины>> as Магазин.Корзины
@@ -83,9 +97,13 @@ rectangle "Магазин\n<size:10>[Software System]</size>" <<Магазин>>
 Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Клиенты : "<color:#707070>Регистрация пользователей\n<color:#707070><size:8>[JSON/HTTPS]</size>"
 Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Товары : "<color:#707070>Просмотр списка товаров\n<color:#707070><size:8>[JSON/HTTPS]</size>"
 Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Корзины : "<color:#707070>Добавление товаров в корзину\n<color:#707070><size:8>[JSON/HTTPS]</size>"
-Магазин.Клиенты .[#707070,thickness=2].> Магазин.Базаданных : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[SQL]</size>"
-Магазин.Товары .[#707070,thickness=2].> Магазин.Базаданных : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[SQL]</size>"
-Магазин.Корзины .[#707070,thickness=2].> Магазин.Базаданных : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[SQL]</size>"
+Магазин.Клиенты .[#707070,thickness=2].> Магазин.БазаданныхSQL : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[SQL]</size>"
+Магазин.Товары .[#707070,thickness=2].> Магазин.БазаданныхSQL : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[SQL]</size>"
+Магазин.Корзины .[#707070,thickness=2].> Магазин.БазаданныхSQL : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[SQL]</size>"
 Склад .[#707070,thickness=2].> Магазин.Товары : "<color:#707070>Передает информацию о доступных на складе твоарах\n<color:#707070><size:8>[JSON/HTTPS]</size>"
 Магазин.Корзины .[#707070,thickness=2].> Системаобработкизаказов : "<color:#707070>Передает информацию корзине покупателя в момент оформления заказа\n<color:#707070><size:8>[JSON/HTTPS]</size>"
+Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Кэш : "<color:#707070>Обращения за кэшем запросов"
+Магазин.Клиенты .[#707070,thickness=2].> Магазин.БазаданныхNoSQL : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[BSON]</size>"
+Магазин.Корзины .[#707070,thickness=2].> Магазин.БазаданныхNoSQL : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[BSON]</size>"
+Магазин.Товары .[#707070,thickness=2].> Магазин.БазаданныхNoSQL : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[BSON]</size>"
 @enduml

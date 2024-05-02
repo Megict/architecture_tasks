@@ -25,13 +25,13 @@ skinparam rectangle<<Магазин.Вебприложение>> {
   BorderColor #9a9a9a
   shadowing false
 }
-skinparam rectangle<<Магазин.Клиенты>> {
+skinparam rectangle<<Покупатель>> {
   BackgroundColor #dddddd
   FontColor #000000
   BorderColor #9a9a9a
   shadowing false
 }
-skinparam rectangle<<Покупатель>> {
+skinparam rectangle<<Магазин.Товары>> {
   BackgroundColor #dddddd
   FontColor #000000
   BorderColor #9a9a9a
@@ -46,12 +46,12 @@ skinparam rectangle<<Магазин>> {
 rectangle "Магазин\n<size:10>[Software System]</size>" <<Магазин>> {
   rectangle "==База данных SQL\n<size:10>[Container: PostgreSQL]</size>\n\nСервис работы с SQL базой данных" <<Магазин.БазаданныхSQL>> as Магазин.БазаданныхSQL
   rectangle "==Веб-приложение\n<size:10>[Container: Dash, Flask, Python]</size>\n\nСервис, с которым взаимодействует клиент" <<Магазин.Вебприложение>> as Магазин.Вебприложение
-  rectangle "==Клиенты\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы с данными клиента" <<Магазин.Клиенты>> as Магазин.Клиенты
+  rectangle "==Товары\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы со списком доступных товаров" <<Магазин.Товары>> as Магазин.Товары
 }
 
 rectangle "==Покупатель\n<size:10>[Person]</size>" <<Покупатель>> as Покупатель
 
-Покупатель .[#707070,thickness=2].> Магазин.Вебприложение : "<color:#707070>1. Найти пользователя по логину\n<color:#707070><size:8>[HTTPS]</size>"
-Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Клиенты : "<color:#707070>2. Выполнить запрос за данными пользователя (POST user_api/produce_user_data)\n<color:#707070><size:8>[JSON/HTTPS]</size>"
-Магазин.Клиенты .[#707070,thickness=2].> Магазин.БазаданныхSQL : "<color:#707070>3. Запрос данных о пользователе (SELECT * FROM users WHERE uname={?} )\n<color:#707070><size:8>[SQL]</size>"
+Покупатель .[#707070,thickness=2].> Магазин.Вебприложение : "<color:#707070>1. Создать новый товар\n<color:#707070><size:8>[HTTPS]</size>"
+Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Товары : "<color:#707070>2. Сохранить данные о товаре (POST user_api/save_new_product_data)\n<color:#707070><size:8>[JSON/HTTPS]</size>"
+Магазин.Товары .[#707070,thickness=2].> Магазин.БазаданныхSQL : "<color:#707070>3. Сохранить данные о товаре (INSERT INTO products (...) VALUES (...) )\n<color:#707070><size:8>[SQL]</size>"
 @enduml

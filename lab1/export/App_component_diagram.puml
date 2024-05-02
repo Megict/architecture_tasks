@@ -25,6 +25,12 @@ skinparam rectangle<<Магазин.Корзины>> {
   BorderColor #9a9a9a
   shadowing false
 }
+skinparam rectangle<<Магазин.Кэш>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
 skinparam rectangle<<Покупатель>> {
   BackgroundColor #dddddd
   FontColor #000000
@@ -50,6 +56,7 @@ skinparam rectangle<<Магазин.Вебприложение>> {
 }
 
 rectangle "==Покупатель\n<size:10>[Person]</size>" <<Покупатель>> as Покупатель
+rectangle "==Кэш\n<size:10>[Container: Redis]</size>\n\nСервис кэша пользователей" <<Магазин.Кэш>> as Магазин.Кэш
 rectangle "==Клиенты\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы с данными клиента" <<Магазин.Клиенты>> as Магазин.Клиенты
 rectangle "==Корзины\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы с корзинами" <<Магазин.Корзины>> as Магазин.Корзины
 rectangle "==Товары\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы со списком доступных товаров" <<Магазин.Товары>> as Магазин.Товары
@@ -59,6 +66,7 @@ rectangle "Веб-приложение\n<size:10>[Container: Dash, Flask, Python
 }
 
 Покупатель .[#707070,thickness=2].> Магазин.Вебприложение.приложение : "<color:#707070>Работа с приложением\n<color:#707070><size:8>[HTTPS]</size>"
+Магазин.Вебприложение.приложение .[#707070,thickness=2].> Магазин.Кэш : "<color:#707070>Обращения за кэшем запросов"
 Магазин.Вебприложение.приложение .[#707070,thickness=2].> Магазин.Клиенты : "<color:#707070>Регистрация пользователей\n<color:#707070><size:8>[JSON/HTTPS]</size>"
 Магазин.Вебприложение.приложение .[#707070,thickness=2].> Магазин.Товары : "<color:#707070>Просмотр списка товаров\n<color:#707070><size:8>[JSON/HTTPS]</size>"
 Магазин.Вебприложение.приложение .[#707070,thickness=2].> Магазин.Корзины : "<color:#707070>Добавление товаров в корзину\n<color:#707070><size:8>[JSON/HTTPS]</size>"
