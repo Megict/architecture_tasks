@@ -13,6 +13,7 @@
     Описание api лежит в ./components_api.md
     Динамические диаграммы лежат по адресу ./diags_imgs/dynamic
     Диаграммы компонентов лежат по адресу ./diags_imgs/components
+    Диаграммы, рисуемые по docker compose up помещаются в export
 
 #### Контекстная диаграмма:
 ![](./diags_imgs/structurizr-Context_diagram.png)
