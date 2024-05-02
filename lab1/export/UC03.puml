@@ -1,0 +1,57 @@
+@startuml
+set separator none
+title Магазин - Dynamic
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+}
+
+hide stereotype
+
+skinparam rectangle<<Магазин.Базаданных>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Вебприложение>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Покупатель>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Товары>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин>> {
+  BorderColor #9a9a9a
+  FontColor #9a9a9a
+  shadowing false
+}
+
+rectangle "Магазин\n<size:10>[Software System]</size>" <<Магазин>> {
+  rectangle "==База данных\n<size:10>[Container: PostgreSQL]</size>\n\nСервис работы с базой данных" <<Магазин.Базаданных>> as Магазин.Базаданных
+  rectangle "==Веб-приложение\n<size:10>[Container: Dash, Flask, Python]</size>\n\nСервис, с которым взаимодействует клиент" <<Магазин.Вебприложение>> as Магазин.Вебприложение
+  rectangle "==Товары\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы со списком доступных товаров" <<Магазин.Товары>> as Магазин.Товары
+}
+
+rectangle "==Покупатель\n<size:10>[Person]</size>" <<Покупатель>> as Покупатель
+
+Покупатель .[#707070,thickness=2].> Магазин.Вебприложение : "<color:#707070>1. Посмотреть список товаров\n<color:#707070><size:8>[HTTPS]</size>"
+Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Товары : "<color:#707070>2. Передать список товаров (GET products_api/produce_products_list)\n<color:#707070><size:8>[JSON/HTTPS]</size>"
+Магазин.Товары .[#707070,thickness=2].> Магазин.Базаданных : "<color:#707070>3. Взять список тваров из бд (SELECT * FROM products)\n<color:#707070><size:8>[SQL]</size>"
+@enduml

@@ -1,0 +1,65 @@
+@startuml
+set separator none
+title Магазин - Веб-приложение - Components
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+}
+
+hide stereotype
+
+skinparam rectangle<<Магазин.Клиенты>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Корзины>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Покупатель>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Товары>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Вебприложение.приложение>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Вебприложение>> {
+  BorderColor #9a9a9a
+  FontColor #9a9a9a
+  shadowing false
+}
+
+rectangle "==Покупатель\n<size:10>[Person]</size>" <<Покупатель>> as Покупатель
+rectangle "==Клиенты\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы с данными клиента" <<Магазин.Клиенты>> as Магазин.Клиенты
+rectangle "==Корзины\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы с корзинами" <<Магазин.Корзины>> as Магазин.Корзины
+rectangle "==Товары\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы со списком доступных товаров" <<Магазин.Товары>> as Магазин.Товары
+
+rectangle "Веб-приложение\n<size:10>[Container: Dash, Flask, Python]</size>" <<Магазин.Вебприложение>> {
+  rectangle "==приложение\n<size:10>[Component]</size>" <<Магазин.Вебприложение.приложение>> as Магазин.Вебприложение.приложение
+}
+
+Покупатель .[#707070,thickness=2].> Магазин.Вебприложение.приложение : "<color:#707070>Работа с приложением\n<color:#707070><size:8>[HTTPS]</size>"
+Магазин.Вебприложение.приложение .[#707070,thickness=2].> Магазин.Клиенты : "<color:#707070>Регистрация пользователей\n<color:#707070><size:8>[JSON/HTTPS]</size>"
+Магазин.Вебприложение.приложение .[#707070,thickness=2].> Магазин.Товары : "<color:#707070>Просмотр списка товаров\n<color:#707070><size:8>[JSON/HTTPS]</size>"
+Магазин.Вебприложение.приложение .[#707070,thickness=2].> Магазин.Корзины : "<color:#707070>Добавление товаров в корзину\n<color:#707070><size:8>[JSON/HTTPS]</size>"
+@enduml

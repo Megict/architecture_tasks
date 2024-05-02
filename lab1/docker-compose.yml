@@ -1,0 +1,15 @@
+version: "latest"
+services:
+  structurizer:
+    build: ./
+
+    volumes:
+      - my-c4-data:/data
+
+volumes:
+  my-c4-data:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: 'C:\\Users\\max\\Desktop\\arch\\architecture_tasks\\lab1\\export\\'

@@ -1,0 +1,49 @@
+@startuml
+set separator none
+title Магазин - Корзины - Components
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+}
+
+hide stereotype
+
+skinparam rectangle<<Магазин.Корзины.apiкорзин>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Базаданных>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Вебприложение>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Корзины>> {
+  BorderColor #9a9a9a
+  FontColor #9a9a9a
+  shadowing false
+}
+
+rectangle "==База данных\n<size:10>[Container: PostgreSQL]</size>\n\nСервис работы с базой данных" <<Магазин.Базаданных>> as Магазин.Базаданных
+rectangle "==Веб-приложение\n<size:10>[Container: Dash, Flask, Python]</size>\n\nСервис, с которым взаимодействует клиент" <<Магазин.Вебприложение>> as Магазин.Вебприложение
+
+rectangle "Корзины\n<size:10>[Container: FastAPI, Python]</size>" <<Магазин.Корзины>> {
+  rectangle "==api корзин\n<size:10>[Component]</size>\n\nПредоставляет информацию окорзинах и том, какие в них лежат товары" <<Магазин.Корзины.apiкорзин>> as Магазин.Корзины.apiкорзин
+}
+
+Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Корзины.apiкорзин : "<color:#707070>Добавление товаров в корзину\n<color:#707070><size:8>[JSON/HTTPS]</size>"
+Магазин.Корзины.apiкорзин .[#707070,thickness=2].> Магазин.Базаданных : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[SQL]</size>"
+@enduml

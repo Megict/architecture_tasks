@@ -1,0 +1,49 @@
+@startuml
+set separator none
+title Магазин - System Context
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+}
+
+hide stereotype
+
+skinparam rectangle<<Магазин>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Покупатель>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Системаобработкизаказов>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Склад>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+
+rectangle "==Покупатель\n<size:10>[Person]</size>" <<Покупатель>> as Покупатель
+rectangle "==Система обработки заказов\n<size:10>[Software System]</size>\n\nСистема обработки заказов" <<Системаобработкизаказов>> as Системаобработкизаказов
+rectangle "==Склад\n<size:10>[Software System]</size>\n\nСистма склада товаров" <<Склад>> as Склад
+rectangle "==Магазин\n<size:10>[Software System]</size>" <<Магазин>> as Магазин
+
+Покупатель .[#707070,thickness=2].> Магазин : "<color:#707070>Работает с системой, формирует корзину"
+Склад .[#707070,thickness=2].> Магазин : "<color:#707070>Передает информацию о доступных продуктах"
+Магазин .[#707070,thickness=2].> Системаобработкизаказов : "<color:#707070>Передает информацию о собранной корзине для дальнейшей обработки"
+@enduml

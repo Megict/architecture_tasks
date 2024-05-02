@@ -1,0 +1,49 @@
+@startuml
+set separator none
+title Магазин - Товары - Components
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+}
+
+hide stereotype
+
+skinparam rectangle<<Магазин.Товары.apiпродуктов>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Базаданных>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Вебприложение>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Товары>> {
+  BorderColor #9a9a9a
+  FontColor #9a9a9a
+  shadowing false
+}
+
+rectangle "==База данных\n<size:10>[Container: PostgreSQL]</size>\n\nСервис работы с базой данных" <<Магазин.Базаданных>> as Магазин.Базаданных
+rectangle "==Веб-приложение\n<size:10>[Container: Dash, Flask, Python]</size>\n\nСервис, с которым взаимодействует клиент" <<Магазин.Вебприложение>> as Магазин.Вебприложение
+
+rectangle "Товары\n<size:10>[Container: FastAPI, Python]</size>" <<Магазин.Товары>> {
+  rectangle "==api продуктов\n<size:10>[Component]</size>\n\nПредоставляет информацию о товарах, число на складе, цена и т.д." <<Магазин.Товары.apiпродуктов>> as Магазин.Товары.apiпродуктов
+}
+
+Магазин.Вебприложение .[#707070,thickness=2].> Магазин.Товары.apiпродуктов : "<color:#707070>Просмотр списка товаров\n<color:#707070><size:8>[JSON/HTTPS]</size>"
+Магазин.Товары.apiпродуктов .[#707070,thickness=2].> Магазин.Базаданных : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[SQL]</size>"
+@enduml

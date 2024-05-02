@@ -1,0 +1,57 @@
+@startuml
+set separator none
+title Магазин - База данных - Components
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+}
+
+hide stereotype
+
+skinparam rectangle<<Магазин.Базаданных.Базаданных>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Клиенты>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Корзины>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Товары>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<Магазин.Базаданных>> {
+  BorderColor #9a9a9a
+  FontColor #9a9a9a
+  shadowing false
+}
+
+rectangle "==Клиенты\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы с данными клиента" <<Магазин.Клиенты>> as Магазин.Клиенты
+rectangle "==Корзины\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы с корзинами" <<Магазин.Корзины>> as Магазин.Корзины
+rectangle "==Товары\n<size:10>[Container: FastAPI, Python]</size>\n\nСервис работы со списком доступных товаров" <<Магазин.Товары>> as Магазин.Товары
+
+rectangle "База данных\n<size:10>[Container: PostgreSQL]</size>" <<Магазин.Базаданных>> {
+  rectangle "==База данных\n<size:10>[Component]</size>" <<Магазин.Базаданных.Базаданных>> as Магазин.Базаданных.Базаданных
+}
+
+Магазин.Клиенты .[#707070,thickness=2].> Магазин.Базаданных.Базаданных : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[SQL]</size>"
+Магазин.Корзины .[#707070,thickness=2].> Магазин.Базаданных.Базаданных : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[SQL]</size>"
+Магазин.Товары .[#707070,thickness=2].> Магазин.Базаданных.Базаданных : "<color:#707070>Запросы к бд\n<color:#707070><size:8>[SQL]</size>"
+@enduml
