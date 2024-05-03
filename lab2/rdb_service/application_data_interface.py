@@ -1,13 +1,21 @@
 from fastapi import FastAPI
-from fastapi import Request
+from fastapi import Request, Body
 
 from datetime import datetime
 from datetime import timedelta
 import psycopg2
 import bcrypt
 
+from pydantic import BaseModel
 
-conn = psycopg2.connect(dbname='shop_db', user='mxcitn', password='1234', host="postgres")
+class UserData(BaseModel):
+    user_name: str
+    user_password: str
+    name_first: str
+    name_last: str
+
+conn = psycopg2.connect(dbname='shop_db', user='mxcitn', password='1234', host="postgres") # если запущен в доекре
+#conn = psycopg2.connect(dbname='shop_db', user='mxcitn', password='1234') # если вне докера
 cursor = conn.cursor()
 
 app = FastAPI()
@@ -32,18 +40,17 @@ def ping():
 #===============================
 @app.post("/main_api/user_create", tags=["User object methods"])
 # добавить пользователя
-async def user_create(request : Request):
+async def user_create(  user_name : str = Body(...) ,
+                        user_password : str = Body(...),
+                        name_first : str = Body('Null'),
+                        name_last : str = Body('Null')
+                        ):
     conn.rollback()
-    request_details = await request.json()
-    user_name = request_details["user_name"]
-    user_password = request_details["user_password"]
-    
-    name_first = request_details["name_first"] if "name_first" in request_details else 'Null'
-    name_last = request_details["name_last"] if "name_last" in request_details else 'Null'
     
     # проверка, не занято ли имя
     cursor.execute(f"SELECT id FROM users WHERE username= '{user_name}';")
     if len(cursor.fetchall()) != 0:
+        pass
         return "user name unavailable"
     # запись
 
@@ -56,18 +63,15 @@ async def user_create(request : Request):
     return None
 
 @app.post("/main_api/user_change", tags=["User object methods"])
-async def user_change(request : Request):
+async def user_change(  old_user_name : str = Body(...),
+                        old_user_password : str = Body(...),
+                        user_name : str = Body(...),
+                        user_password : str = Body(...),
+                        name_first : str = Body('Null'),
+                        name_last : str = Body('Null')
+                        ):
     conn.rollback()
-    request_details = await request.json()
     # можно изменить что угодно, если данные не меняются, то надо передать старые
-    old_user_name = request_details["old_user_name"]
-    old_user_password = request_details["old_user_password"]
-
-    user_name = request_details["user_name"]
-    user_password = request_details["user_password"]
-    
-    name_first = request_details["name_first"] if "name_first" in request_details else 'Null'
-    name_last = request_details["name_last"] if "name_last" in request_details else 'Null'
 
     # верификация по паролю
     cursor.execute(f"SELECT id, pword_hash, pword_salt FROM users WHERE username= '{old_user_name}';")
@@ -90,11 +94,9 @@ async def user_change(request : Request):
 
 # возвращаем данные по пользователю, пароль и имя которого предоставлено
 @app.post("/main_api/produce_user_data", tags=["User object methods"])
-async def produce_user_data(request : Request):
+async def produce_user_data(user_name : str = Body(...) ,
+                            user_password : str = Body(...)):
     conn.rollback()
-    request_details = await request.json()
-    user_name = request_details["user_name"]
-    user_password = request_details["user_password"]
 
     verify = verify_user(user_name, user_password)
     if verify[0] != "OK":
@@ -106,11 +108,8 @@ async def produce_user_data(request : Request):
 
 # возвращаем список всех корзин пользователя
 @app.post("/main_api/produce_user_baskets", tags=["User object methods"])
-async def produce_user_baskets(request : Request):
-    conn.rollback()
-    request_details = await request.json()
-    user_name = request_details["user_name"]
-    user_password = request_details["user_password"]
+async def produce_user_baskets( user_name : str = Body(...) ,
+                                user_password : str = Body(...)):
 
     verify = verify_user(user_name, user_password)
     if verify[0] != "OK":
@@ -121,24 +120,21 @@ async def produce_user_baskets(request : Request):
 
 # поиск по маске имени и фамилии
 @app.post("/main_api/find_user_data", tags=["User object methods", "Search"])
-async def find_user_data(request : Request):
+async def find_user_data(   user_name_mask : str = Body("") ,
+                            name_first_mask : str = Body("") ,
+                            name_last_mask : str = Body("")):
     conn.rollback()
-    request_details = await request.json()
-    name_first_mask = request_details["name_first_mask"]
-    name_last_mask = request_details["name_last_mask"]
 
-    cursor.execute(f"SELECT * FROM users WHERE LOWER(name_first) LIKE '%{name_first_mask.lower()}%' AND LOWER(name_last) LIKE '%{name_last_mask.lower()}%';")
+    cursor.execute(f"SELECT * FROM users WHERE LOWER(username) LIKE '%{user_name_mask.lower()}%' AND LOWER(name_first) LIKE '%{name_first_mask.lower()}%' AND LOWER(name_last) LIKE '%{name_last_mask.lower()}%';")
 
     return [{"user_name" : rec[1], "first_name" : rec[4], "last_name" : rec[5]} for rec in cursor.fetchall()]
 
 # методы работы с корзинами
 #===============================
 @app.post("/main_api/basket_create", tags=["Basket object methods"])
-async def basket_create(request : Request):
+async def basket_create(user_name : str = Body(...) ,
+                        user_password : str = Body(...)):
     conn.rollback()
-    request_details = await request.json()
-    user_name = request_details["user_name"]
-    user_password = request_details["user_password"]
     
     verify = verify_user(user_name, user_password)
     if verify[0] != "OK":
@@ -151,11 +147,11 @@ async def basket_create(request : Request):
     basket_id = cursor.fetchall()[0][0]
     conn.commit()
 
-    return basket_id
+    return {"basket_id" : basket_id}
 
 # общие данные о корзине
 @app.get("/main_api/get_basket_data", tags=["Basket object methods"])
-def get_basket_data(basket_id, request : Request): 
+def get_basket_data(basket_id): 
     conn.rollback()
     cursor.execute(f"SELECT * FROM baskets WHERE id = {basket_id}")
     bask = cursor.fetchall()[0]
@@ -163,24 +159,21 @@ def get_basket_data(basket_id, request : Request):
 
 # что лежит в коризне
 @app.get("/main_api/get_basket_contents", tags=["Basket object methods"])
-def get_products_in_basket(basket_id, request : Request): 
+def get_products_in_basket(basket_id): 
     conn.rollback()
     cursor.execute(f"SELECT product_id, name, price, product_amount FROM basket_to_product JOIN products ON product_id= products.id WHERE basket_id = {basket_id}")
     return [{"id" : elm[0], "name" : elm[1], "price" : elm[2], "amount" : elm[3]} for elm in cursor.fetchall()]
 
 # добавить товар в корзину
 @app.post("/main_api/basket_add_item", tags=["Basket object methods"])
-async def basket_add_item(request : Request):
+async def basket_add_item(  user_name : str = Body(...) ,
+                            user_password : str = Body(...) ,
+                            basket_id : int = Body(...) ,
+                            product_id : int = Body(...),
+                            amount : int = Body(...)):
     conn.rollback()
-    request_details = await request.json()
-    user_name = request_details["user_name"]
-    user_password = request_details["user_password"]
-    
-    basket_id = request_details["basket_id"]
-    product_id = request_details["product_id"]
 
-    amount = request_details["amount"]
-    # добавить проверку, что добавляемое количество меньше максимально доступного
+    # добавить проверку, что добавляемое количество меньше максимально доступного + 
     # вообще это должно в интерфейсе отрабатываться, где предлагается выбрать чисто от 1 до доступного кол-ва
     # доступное количество передается методом, который дает инфу по товарам
     # здесь будет только проверка при закрытии корзины
@@ -222,17 +215,14 @@ async def basket_add_item(request : Request):
 
 # поменять количество товара в корзине
 @app.post("/main_api/basket_mod_item", tags=["Basket object methods"])
-async def basket_mod_item(request : Request):
+async def basket_mod_item(  user_name : str = Body(...) ,
+                            user_password : str = Body(...) ,
+                            basket_id : int = Body(...) ,
+                            product_id : int = Body(...),
+                            amount : int = Body(...)):
     conn.rollback()
-    request_details = await request.json()
-    user_name = request_details["user_name"]
-    user_password = request_details["user_password"]
     
-    basket_id = request_details["basket_id"]
-    product_id = request_details["product_id"]
-
-    amount = request_details["amount"]
-    # добавить проверку, что добавляемое количество меньше максимально доступного
+    # добавить проверку, что добавляемое количество меньше максимально доступного +
 
     verify = verify_user(user_name, user_password)
     if verify[0] != "OK":
@@ -269,14 +259,11 @@ async def basket_mod_item(request : Request):
 
 # удалить товар из корзины
 @app.post("/main_api/basket_remove_item", tags=["Basket object methods"])
-async def basket_remove_item(request : Request):
+async def basket_remove_item(   user_name : str = Body(...) ,
+                                user_password : str = Body(...) ,
+                                basket_id : int = Body(...) ,
+                                product_id : int = Body(...)):
     conn.rollback()
-    request_details = await request.json()
-    user_name = request_details["user_name"]
-    user_password = request_details["user_password"]
-    
-    basket_id = request_details["basket_id"]
-    product_id = request_details["product_id"]
 
     verify = verify_user(user_name, user_password)
     if verify[0] != "OK":
@@ -307,14 +294,11 @@ async def basket_remove_item(request : Request):
 
 # закрыть коризину (тут в теории информация должна передаваться в сервис оплаты и доставки)
 @app.post("/main_api/basket_finalize", tags=["Basket object methods"])
-async def basket_finalize(request : Request):
+async def basket_finalize(  user_name : str = Body(...) ,
+                            user_password : str = Body(...) ,
+                            basket_id : int = Body(...)):
     conn.rollback()
     # указываем дату закрытия корзины и возвращаем спиок всех товаров
-    request_details = await request.json()
-    user_name = request_details["user_name"]
-    user_password = request_details["user_password"]
-    
-    basket_id = request_details["basket_id"]
     
     verify = verify_user(user_name, user_password)
     if verify[0] != "OK":
@@ -360,14 +344,28 @@ async def basket_finalize(request : Request):
 
 # методы работы с продуктами
 #===============================
+@app.post("/main_api/add_new_product", tags=["Product object methods"])
+async def add_new_product(  product_name : str = Body(...),
+                            product_price : int = Body(...),
+                            product_amount : int = Body(...)):
+    conn.rollback()
+
+    cursor.execute(f"INSERT INTO products (name, price, amount)\
+                        VALUES {product_name, product_price, product_amount};")
+    conn.commit()
+    
+    cursor.execute("SELECT id FROM products ORDER BY id desc limit 1")
+    prod_id = cursor.fetchall()[0][0]
+    return {"prod_id" : prod_id}
+
 @app.get("/main_api/get_all_available_items_list", tags=["Product object methods"])
-async def get_all_available_items_list(request : Request):
+async def get_all_available_items_list():
     conn.rollback()
     cursor.execute(f"SELECT * FROM products")
     return [{"id" : elm[0], "name" : elm[1], "price" : elm[2], "amount" : elm[3]} for elm in cursor.fetchall()]
 
 @app.get("/main_api/get_product_data", tags=["Product object methods"])
-async def get_product_data(product_id, request : Request):
+async def get_product_data(product_id):
     conn.rollback()
     cursor.execute(f"SELECT * FROM products WHERE id= {product_id}")
     elm = cursor.fetchall()
@@ -376,3 +374,28 @@ async def get_product_data(product_id, request : Request):
     else:
         elm = elm[0]
     return {"id" : elm[0], "name" : elm[1], "price" : elm[2], "amount" : elm[3]}
+
+@app.post("/main_api/change_product_data", tags=["Product object methods"])
+async def add_new_product(  product_id : int = Body(...),
+                            new_product_name : str = Body(None),
+                            new_product_price : int = Body(None),
+                            new_product_amount : int = Body(None)):
+    conn.rollback()
+
+    q = "UPDATE products SET "
+    if new_product_name is not None:
+        q += f"name = '{new_product_name}', "
+    if new_product_price is not None:
+        q += f"price = '{new_product_price}', "
+    if new_product_amount is not None:
+        q += f"amount = '{new_product_amount}', "
+    q = q[:-2] + " "
+    q += f" WHERE id = {product_id};"
+    cursor.execute(q)
+    conn.commit()
+    return "OK"
+
+# import yaml
+# docs = app.openapi()
+# with open("index.yaml", 'w') as f:
+#     yaml.dump(docs, f)

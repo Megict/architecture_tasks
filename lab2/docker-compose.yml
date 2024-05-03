@@ -19,6 +19,8 @@ services:
     build: ./rdb_service
     ports:
       - "8000:8000"
+    depends_on:
+      - postgres
 
 volumes:
   my-pg-data:
