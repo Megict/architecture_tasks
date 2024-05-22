@@ -12,8 +12,8 @@
 
 ### Результаты
 
-    Скриат, создающий таблицы лежит в ./create_tables.sql
-    Скрипт, заполняющий БД лежит в ./initialize.py
+    Скрипт, создающий таблицы, лежит в ./create_tables.sql
+    Скрипт, заполняющий БД, лежит в ./initialize.py
     Исходный код api лежит в ./rdb_service/application_data_interface.py
     При выполнении docker compose up интерфейс доступен по localhost:8000, документация в формате OpenAPI 3.0 по http://localhost:8000/docs#/
     Отдельно документация лежит в ./rdb_service/index.yaml
