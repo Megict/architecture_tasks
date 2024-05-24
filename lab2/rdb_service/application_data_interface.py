@@ -116,7 +116,7 @@ async def produce_user_baskets( user_name : str = Body(...) ,
         return verify
     
     cursor.execute(f"SELECT * FROM baskets WHERE owner_user_id = {verify[1]}")
-    return [{"basket_id" : bask[0], "basket_owned" : bask[1], "basket_opened" : bask[2], "basket_closed" : bask[3], "basket_contents" : get_products_in_basket(bask[0], request)}  for bask in cursor.fetchall()]
+    return [{"basket_id" : bask[0], "basket_owned" : bask[1], "basket_opened" : bask[2], "basket_closed" : bask[3], "basket_contents" : get_products_in_basket(bask[0])}  for bask in cursor.fetchall()]
 
 # поиск по маске имени и фамилии
 @app.post("/main_api/find_user_data", tags=["User object methods", "Search"])

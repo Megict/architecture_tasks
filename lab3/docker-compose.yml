@@ -1,7 +1,7 @@
-version: "latest"
+version: "2.0"
 services:
   mongo:
-    image: mongo
+    image: mongo:4.4.6
     container_name: mongo
     environment:
         - MONGO_INITDB_ROOT_USERNAME=root
@@ -29,3 +29,11 @@ services:
     restart: unless-stopped
     ports:
       - "8081:8081"
+  
+  data:
+    build: ./mdb_service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+      - mongo-express

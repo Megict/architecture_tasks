@@ -41,13 +41,13 @@ def create_random_user():
 
     return user_name, passwor_hash, salt.decode('utf-8'), name_first, name_last, baskets
 
-try:
-    # пытаемся подключиться к базе данных
-    conn = psycopg2.connect(dbname='shop_db', user='mxcitn', password='1234')
-except:
-    # в случае сбоя подключения будет выведено сообщение в STDOUT
-    print('Can`t establish connection to database')
-    conn = None
+# try:
+# пытаемся подключиться к базе данных
+conn = psycopg2.connect(dbname='shop_db', user='mxcitn', password='1234', host='localhost')
+# except:
+#     # в случае сбоя подключения будет выведено сообщение в STDOUT
+#     print('Can`t establish connection to database')
+#     conn = None
 
 # инициализация бд случайно сгенерированными данными о клиентах, товарах и корзинах
 if conn is not None:
@@ -79,8 +79,8 @@ if conn is not None:
             # наполняем корзину товарами
             basket_id = cursor.fetchall()[0][0]
             for _ in range(random.choice(range(10))):
-                cursor.execute(f"INSERT INTO basket_to_product (basket_id, product_id)\
-                                    VALUES {basket_id, random.choice(avail_products)[0]};")
+                cursor.execute(f"INSERT INTO basket_to_product (basket_id, product_id, product_amount)\
+                                    VALUES {basket_id, random.choice(avail_products)[0], random.choice(range(4))};")
                 
 
     conn.commit()

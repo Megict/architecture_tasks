@@ -1,4 +1,5 @@
-version: "latest"
+version: "2.0"
+
 services:
   structurizer:
     build: ./
@@ -12,4 +13,4 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: 'C:\\Users\\max\\Desktop\\arch\\architecture_tasks\\lab1\\export\\'
+      device: '/home/max/Desktop/arch/architecture_tasks/lab1/export'
