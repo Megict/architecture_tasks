@@ -1,0 +1,209 @@
+from pymongo import MongoClient
+from bson import ObjectId
+from bson import json_util
+from fastapi import FastAPI
+from fastapi import Request, Body
+import json
+import requests
+
+from datetime import datetime
+from datetime import timedelta
+import bcrypt
+
+from pydantic import BaseModel
+
+class UserData(BaseModel):
+    user_name: str
+    user_password: str
+    name_first: str
+    name_last: str
+
+client = MongoClient("mongodb://root:1234@mongo:27017/?authSource=admin") # если запущен в доекре
+
+db = client['ShopDB']
+prod_coll = db.products
+users_coll = db.users
+basket_coll = db.baskets
+
+app = FastAPI()
+
+
+@app.get("/mongo_api/ping")
+def ping():
+    return None
+
+# методы работы с пользователями
+#===============================
+@app.post("/mongo_api/user_create", tags=["User object methods"])
+# добавить пользователя
+async def user_create(  user_name : str = Body(...) ,
+                        user_password : str = Body(...),
+                        name_first : str = Body(None),
+                        name_last : str = Body(None)
+                        ):
+    
+    responce = requests.post("http://user_service:8000/mongo_api/user_create", 
+                             json = {"user_name" : user_name, 
+                                     "user_password" : user_password, 
+                                     "name_first" : name_first, 
+                                     "name_last" : name_last})
+    return json.loads(responce.text)
+
+@app.post("/mongo_api/user_change", tags=["User object methods"])
+async def user_change(  old_user_name : str = Body(...),
+                        old_user_password : str = Body(...),
+                        user_name : str = Body(...),
+                        user_password : str = Body(...),
+                        name_first : str = Body(None),
+                        name_last : str = Body(None)
+                        ):
+    
+    responce = requests.post("http://user_service:8000/mongo_api/user_change", 
+                             json = {"old_user_name" : old_user_name, 
+                                     "old_user_password" : old_user_password, 
+                                     "user_name" : user_name, 
+                                     "user_password" : user_password, 
+                                     "name_first" : name_first, 
+                                     "name_last" : name_last})
+    return json.loads(responce.text)
+
+# возвращаем данные по пользователю, пароль и имя которого предоставлено
+@app.post("/mongo_api/produce_user_data", tags=["User object methods"])
+async def produce_user_data(user_name : str = Body(...) ,
+                            user_password : str = Body(...)):
+
+    responce = requests.post("http://user_service:8000/mongo_api/produce_user_data", 
+                             json = {"user_name" : user_name, 
+                                     "user_password" : user_password})
+    return json.loads(responce.text)
+
+# возвращаем список всех корзин пользователя
+@app.post("/mongo_api/produce_user_baskets", tags=["User object methods"])
+async def produce_user_baskets( user_name : str = Body(...) ,
+                                user_password : str = Body(...)):
+
+    responce = requests.post("http://user_service:8000/mongo_api/produce_user_baskets", 
+                             json = {"user_name" : user_name, 
+                                     "user_password" : user_password})
+    return json.loads(responce.text)
+
+# методы работы с корзинами
+#===============================
+@app.post("/mongo_api/basket_create", tags=["Basket object methods"])
+async def basket_create(user_name : str = Body(...) ,
+                        user_password : str = Body(...)):
+    
+    responce = requests.post("http://basket_service:8000/mongo_api/basket_create", 
+                             json = {"user_name" : user_name, 
+                                     "user_password" : user_password})
+    return json.loads(responce.text)
+
+# общие данные о корзине
+@app.get("/mongo_api/get_basket_data", tags=["Basket object methods"])
+def get_basket_data(basket_id): 
+    
+    responce = requests.post("http://basket_service:8000/mongo_api/get_basket_data", 
+                             json = {"basket_id" : basket_id})
+    return json.loads(responce.text)
+
+# что лежит в коризне
+@app.get("/mongo_api/get_basket_contents", tags=["Basket object methods"])
+def get_products_in_basket(basket_id): 
+    
+    responce = requests.post("http://basket_service:8000/mongo_api/get_basket_contents", 
+                             json = {"basket_id" : basket_id})
+    return json.loads(responce.text)
+
+# добавить товар в корзину
+@app.post("/mongo_api/basket_add_item", tags=["Basket object methods"])
+async def basket_add_item(  user_name : str = Body(...) ,
+                            user_password : str = Body(...) ,
+                            basket_id : str = Body(...) ,
+                            product_id : str = Body(...),
+                            amount : int = Body(...)):
+    
+    responce = requests.post("http://basket_service:8000/mongo_api/basket_add_item", 
+                             json = {"user_name" : user_name, 
+                                     "user_password" : user_password, 
+                                     "basket_id" : basket_id, 
+                                     "product_id" : product_id, 
+                                     "amount" : amount})
+    return json.loads(responce.text)
+
+# поменять количество товара в корзине
+@app.post("/mongo_api/basket_mod_item", tags=["Basket object methods"])
+async def basket_mod_item(  user_name : str = Body(...) ,
+                            user_password : str = Body(...) ,
+                            basket_id : str = Body(...) ,
+                            product_id : str = Body(...),
+                            amount : int = Body(...)):
+    
+    responce = requests.post("http://basket_service:8000/mongo_api/basket_mod_item", 
+                             json = {"user_name" : user_name, 
+                                     "user_password" : user_password, 
+                                     "basket_id" : basket_id, 
+                                     "product_id" : product_id, 
+                                     "amount" : amount})
+    return json.loads(responce.text)
+
+# удалить товар из корзины
+@app.post("/mongo_api/basket_remove_item", tags=["Basket object methods"])
+async def basket_remove_item(   user_name : str = Body(...) ,
+                                user_password : str = Body(...) ,
+                                basket_id : str = Body(...) ,
+                                product_id : str = Body(...)):
+    
+    responce = requests.post("http://basket_service:8000/mongo_api/basket_remove_item", 
+                             json = {"user_name" : user_name, 
+                                     "user_password" : user_password, 
+                                     "basket_id" : basket_id, 
+                                     "product_id" : product_id})
+    return json.loads(responce.text)
+
+# закрыть коризину (тут в теории информация должна передаваться в сервис оплаты и доставки)
+@app.post("/mongo_api/basket_finalize", tags=["Basket object methods"])
+async def basket_finalize(  user_name : str = Body(...) ,
+                            user_password : str = Body(...) ,
+                            basket_id : str = Body(...)):
+    
+    
+    responce = requests.post("http://basket_service:8000/mongo_api/basket_finalize", 
+                             json = {"user_name" : user_name, 
+                                     "user_password" : user_password, 
+                                     "basket_id" : basket_id})
+    return json.loads(responce.text)
+
+
+# методы работы с продуктами
+#===============================
+@app.post("/mongo_api/add_new_product", tags=["Product object methods"])
+async def add_new_product(  product_name : str = Body(...),
+                            product_price : int = Body(...),
+                            product_amount : int = Body(...)):
+
+    responce = requests.post("http://product_service:8000/mongo_api/add_new_product", 
+                             json = {"product_name" : product_name, 
+                                     "product_price" : product_price, 
+                                     "product_amount" : product_amount})
+    return json.loads(responce.text)
+
+@app.get("/mongo_api/get_all_available_items_list", tags=["Product object methods"])
+async def get_all_available_items_list():
+    return json.loads(requests.get("http://product_service:8000/mongo_api/get_all_available_items_list").text)
+
+@app.get("/mongo_api/get_product_data", tags=["Product object methods"])
+async def get_product_data(product_id):
+    return json.loads(requests.get(url = "http://product_service:8000/mongo_api/get_product_data", params = {"product_id" : product_id}).text)
+
+@app.post("/mongo_api/change_product_data", tags=["Product object methods"])
+async def add_new_product(  product_id : str = Body(...),
+                            new_product_name : str = Body(None),
+                            new_product_price : int = Body(None),
+                            new_product_amount : int = Body(None)):
+    
+    responce = requests.post("http://product_service:8000/mongo_api/change_product_data", 
+                             json = {"product_id" : product_id, 
+                                     "new_product_name" : new_product_name, 
+                                     "new_product_price" : new_product_price, 
+                                     "new_product_amount" : new_product_amount})
+    return json.loads(responce.text)
