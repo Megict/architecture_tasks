@@ -1,0 +1,649 @@
+components:
+  schemas:
+    Body_add_new_product_main_api_add_new_product_post:
+      properties:
+        product_amount:
+          title: Product Amount
+          type: integer
+        product_name:
+          title: Product Name
+          type: string
+        product_price:
+          title: Product Price
+          type: integer
+      required:
+      - product_name
+      - product_price
+      - product_amount
+      title: Body_add_new_product_main_api_add_new_product_post
+      type: object
+    Body_add_new_product_main_api_change_product_data_post:
+      properties:
+        new_product_amount:
+          title: New Product Amount
+          type: integer
+        new_product_name:
+          title: New Product Name
+          type: string
+        new_product_price:
+          title: New Product Price
+          type: integer
+        product_id:
+          title: Product Id
+          type: integer
+      required:
+      - product_id
+      title: Body_add_new_product_main_api_change_product_data_post
+      type: object
+    Body_basket_add_item_main_api_basket_add_item_post:
+      properties:
+        amount:
+          title: Amount
+          type: integer
+        basket_id:
+          title: Basket Id
+          type: integer
+        product_id:
+          title: Product Id
+          type: integer
+        user_name:
+          title: User Name
+          type: string
+        user_password:
+          title: User Password
+          type: string
+      required:
+      - user_name
+      - user_password
+      - basket_id
+      - product_id
+      - amount
+      title: Body_basket_add_item_main_api_basket_add_item_post
+      type: object
+    Body_basket_create_main_api_basket_create_post:
+      properties:
+        user_name:
+          title: User Name
+          type: string
+        user_password:
+          title: User Password
+          type: string
+      required:
+      - user_name
+      - user_password
+      title: Body_basket_create_main_api_basket_create_post
+      type: object
+    Body_basket_finalize_main_api_basket_finalize_post:
+      properties:
+        basket_id:
+          title: Basket Id
+          type: integer
+        user_name:
+          title: User Name
+          type: string
+        user_password:
+          title: User Password
+          type: string
+      required:
+      - user_name
+      - user_password
+      - basket_id
+      title: Body_basket_finalize_main_api_basket_finalize_post
+      type: object
+    Body_basket_mod_item_main_api_basket_mod_item_post:
+      properties:
+        amount:
+          title: Amount
+          type: integer
+        basket_id:
+          title: Basket Id
+          type: integer
+        product_id:
+          title: Product Id
+          type: integer
+        user_name:
+          title: User Name
+          type: string
+        user_password:
+          title: User Password
+          type: string
+      required:
+      - user_name
+      - user_password
+      - basket_id
+      - product_id
+      - amount
+      title: Body_basket_mod_item_main_api_basket_mod_item_post
+      type: object
+    Body_basket_remove_item_main_api_basket_remove_item_post:
+      properties:
+        basket_id:
+          title: Basket Id
+          type: integer
+        product_id:
+          title: Product Id
+          type: integer
+        user_name:
+          title: User Name
+          type: string
+        user_password:
+          title: User Password
+          type: string
+      required:
+      - user_name
+      - user_password
+      - basket_id
+      - product_id
+      title: Body_basket_remove_item_main_api_basket_remove_item_post
+      type: object
+    Body_find_user_data_main_api_find_user_data_post:
+      properties:
+        name_first_mask:
+          default: ''
+          title: Name First Mask
+          type: string
+        name_last_mask:
+          default: ''
+          title: Name Last Mask
+          type: string
+        user_name_mask:
+          default: ''
+          title: User Name Mask
+          type: string
+      title: Body_find_user_data_main_api_find_user_data_post
+      type: object
+    Body_produce_user_baskets_main_api_produce_user_baskets_post:
+      properties:
+        user_name:
+          title: User Name
+          type: string
+        user_password:
+          title: User Password
+          type: string
+      required:
+      - user_name
+      - user_password
+      title: Body_produce_user_baskets_main_api_produce_user_baskets_post
+      type: object
+    Body_produce_user_data_main_api_produce_user_data_post:
+      properties:
+        user_name:
+          title: User Name
+          type: string
+        user_password:
+          title: User Password
+          type: string
+      required:
+      - user_name
+      - user_password
+      title: Body_produce_user_data_main_api_produce_user_data_post
+      type: object
+    Body_user_change_main_api_user_change_post:
+      properties:
+        name_first:
+          default: 'Null'
+          title: Name First
+          type: string
+        name_last:
+          default: 'Null'
+          title: Name Last
+          type: string
+        old_user_name:
+          title: Old User Name
+          type: string
+        old_user_password:
+          title: Old User Password
+          type: string
+        user_name:
+          title: User Name
+          type: string
+        user_password:
+          title: User Password
+          type: string
+      required:
+      - old_user_name
+      - old_user_password
+      - user_name
+      - user_password
+      title: Body_user_change_main_api_user_change_post
+      type: object
+    Body_user_create_main_api_user_create_post:
+      properties:
+        name_first:
+          default: 'Null'
+          title: Name First
+          type: string
+        name_last:
+          default: 'Null'
+          title: Name Last
+          type: string
+        user_name:
+          title: User Name
+          type: string
+        user_password:
+          title: User Password
+          type: string
+      required:
+      - user_name
+      - user_password
+      title: Body_user_create_main_api_user_create_post
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+info:
+  title: FastAPI
+  version: 0.1.0
+openapi: 3.1.0
+paths:
+  /main_api/add_new_product:
+    post:
+      operationId: add_new_product_main_api_add_new_product_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_add_new_product_main_api_add_new_product_post'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Add New Product
+      tags:
+      - Product object methods
+  /main_api/basket_add_item:
+    post:
+      operationId: basket_add_item_main_api_basket_add_item_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_basket_add_item_main_api_basket_add_item_post'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Basket Add Item
+      tags:
+      - Basket object methods
+  /main_api/basket_create:
+    post:
+      operationId: basket_create_main_api_basket_create_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_basket_create_main_api_basket_create_post'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Basket Create
+      tags:
+      - Basket object methods
+  /main_api/basket_finalize:
+    post:
+      operationId: basket_finalize_main_api_basket_finalize_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_basket_finalize_main_api_basket_finalize_post'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Basket Finalize
+      tags:
+      - Basket object methods
+  /main_api/basket_mod_item:
+    post:
+      operationId: basket_mod_item_main_api_basket_mod_item_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_basket_mod_item_main_api_basket_mod_item_post'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Basket Mod Item
+      tags:
+      - Basket object methods
+  /main_api/basket_remove_item:
+    post:
+      operationId: basket_remove_item_main_api_basket_remove_item_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_basket_remove_item_main_api_basket_remove_item_post'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Basket Remove Item
+      tags:
+      - Basket object methods
+  /main_api/change_product_data:
+    post:
+      operationId: add_new_product_main_api_change_product_data_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_add_new_product_main_api_change_product_data_post'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Add New Product
+      tags:
+      - Product object methods
+  /main_api/find_user_data:
+    post:
+      operationId: find_user_data_main_api_find_user_data_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/Body_find_user_data_main_api_find_user_data_post'
+              title: Body
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Find User Data
+      tags:
+      - User object methods
+      - Search
+  /main_api/get_all_available_items_list:
+    get:
+      operationId: get_all_available_items_list_main_api_get_all_available_items_list_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      summary: Get All Available Items List
+      tags:
+      - Product object methods
+  /main_api/get_basket_contents:
+    get:
+      operationId: get_products_in_basket_main_api_get_basket_contents_get
+      parameters:
+      - in: query
+        name: basket_id
+        required: true
+        schema:
+          title: Basket Id
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get Products In Basket
+      tags:
+      - Basket object methods
+  /main_api/get_basket_data:
+    get:
+      operationId: get_basket_data_main_api_get_basket_data_get
+      parameters:
+      - in: query
+        name: basket_id
+        required: true
+        schema:
+          title: Basket Id
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get Basket Data
+      tags:
+      - Basket object methods
+  /main_api/get_product_data:
+    get:
+      operationId: get_product_data_main_api_get_product_data_get
+      parameters:
+      - in: query
+        name: product_id
+        required: true
+        schema:
+          title: Product Id
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get Product Data
+      tags:
+      - Product object methods
+  /main_api/ping:
+    get:
+      operationId: ping_main_api_ping_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      summary: Ping
+  /main_api/produce_user_baskets:
+    post:
+      operationId: produce_user_baskets_main_api_produce_user_baskets_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_produce_user_baskets_main_api_produce_user_baskets_post'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Produce User Baskets
+      tags:
+      - User object methods
+  /main_api/produce_user_data:
+    post:
+      operationId: produce_user_data_main_api_produce_user_data_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_produce_user_data_main_api_produce_user_data_post'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Produce User Data
+      tags:
+      - User object methods
+  /main_api/user_change:
+    post:
+      operationId: user_change_main_api_user_change_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_user_change_main_api_user_change_post'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: User Change
+      tags:
+      - User object methods
+  /main_api/user_create:
+    post:
+      operationId: user_create_main_api_user_create_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body_user_create_main_api_user_create_post'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: User Create
+      tags:
+      - User object methods
