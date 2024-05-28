@@ -154,6 +154,17 @@ async def user_change(  token : str = Body(...),
         pass
     else:
         return "user name unavailable"
+    # запись в кэш
+    if use_cache:
+        print("caching data")
+        redis_client.set(token + "_produce_user_data", json.dumps({ "_id": str(verify[1]),
+                                                                    "username": user_name,
+                                                                    "name_first": name_first,
+                                                                    "name_last": name_last
+                                                                    }), ex = 60) # записываем данные в кэш
+    else:
+        print("cache disabled")
+        
     # запись
     salt = bcrypt.gensalt()
     password_hash = bcrypt.hashpw(user_password.encode('utf-8'), salt).decode('utf-8')
@@ -173,11 +184,16 @@ async def produce_user_data(token : str = Body(...)):
         if cached_data is not None:
             print("using redis cache")
             return json.loads(cached_data)
+    else:
+        print("cache disabled")
     
     doc = normalise_ids(users_coll.find_one({"_id" : ObjectId(verify[1])}, {"pword_hash" : 0, "pword_salt" : 0}))
     if use_cache:
         print("caching data")
         redis_client.set(token + "_produce_user_data", json.dumps(doc), ex = 60) # записываем данные в кэш
+    else:
+        print("cache disabled")
+
     return normalise_ids(doc)
 
 # возвращаем список всех корзин пользователя
@@ -193,6 +209,8 @@ async def produce_user_baskets(token : str = Body(...)):
         if cached_data is not None:
             print("using redis cache")
             return json.loads(cached_data)
+    else:
+        print("cache disabled")
     
     result = basket_coll.find({"owner_user_id" : ObjectId(verify[1])})
 
@@ -201,4 +219,7 @@ async def produce_user_baskets(token : str = Body(...)):
     if use_cache:
         print("caching data")
         redis_client.set(token + "_produce_user_baskets", json.dumps(res), ex = 60) # записываем данные в кэш
+    else:
+        print("cache disabled")
+
     return res

@@ -65,7 +65,7 @@ async def user_change(  token : str = Body(...),
 # возвращаем данные по пользователю, пароль и имя которого предоставлено
 @app.post("/mongo_api/produce_user_data", tags=["User object methods"])
 async def produce_user_data(token : str = Body(...)):
-    print(token)
+    
     responce = requests.post("http://user_service:8000/mongo_api/produce_user_data", 
                              json = token)
     return json.loads(responce.text)
