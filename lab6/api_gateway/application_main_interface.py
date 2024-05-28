@@ -7,6 +7,7 @@ import requests
 
 from circuitbreaker import circuit
 from circuitbreaker import CircuitBreakerMonitor
+from circuitbreaker import CircuitBreaker
 
 client = MongoClient("mongodb://root:1234@mongo:27017/?authSource=admin") # если запущен в доекре
 
@@ -20,6 +21,16 @@ app = FastAPI()
 async def fallback(*args, **kwargs):
     raise HTTPException(status_code= 503, detail= "blocked by circit breaker")
 
+class CircitBreakerForServices(CircuitBreaker):
+    FAILURE_THRESHOLD = 2
+    RECOVERY_TIMEOUT = 60
+    FALLBACK_FUNCTION = fallback
+
+users_cb = CircitBreakerForServices()
+baskets_cb = CircitBreakerForServices()
+products_cb = CircitBreakerForServices()
+
+
 @app.get("/mongo_api/ping")
 def ping():
     return None
@@ -29,14 +40,14 @@ def trigger_monitor():
     cba = CircuitBreakerMonitor.get_circuits()
     rst = ""
     for elm in cba:
-        rst += f"{elm.state} {elm.failure_count} {elm.open_remaining if elm.opened else ''}\n"
+        rst += f"{elm.state}\t{elm.failure_count}\t{elm.open_remaining if elm.opened else ''}\n"
     print(rst)
     return rst
 
 # методы работы с пользователями
 #===============================
 @app.post("/mongo_api/user_create", tags=["User object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@users_cb
 # добавить пользователя
 async def user_create(  user_name : str = Body(...) ,
                         user_password : str = Body(...),
@@ -52,7 +63,7 @@ async def user_create(  user_name : str = Body(...) ,
     return json.loads(responce.text)
 
 @app.post("/mongo_api/authenticate_user", tags=["User object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@users_cb
 async def authorise_user(user_name : str = Body(...) ,
                          user_password : str = Body(...)):
 
@@ -81,7 +92,7 @@ async def user_change(  token : str = Body(...),
 
 # возвращаем данные по пользователю, пароль и имя которого предоставлено
 @app.post("/mongo_api/produce_user_data", tags=["User object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@users_cb
 async def produce_user_data(token : str = Body(...)):
     
     responce = requests.post("http://user_service:8000/mongo_api/produce_user_data", 
@@ -90,7 +101,7 @@ async def produce_user_data(token : str = Body(...)):
 
 # возвращаем список всех корзин пользователя
 @app.post("/mongo_api/produce_user_baskets", tags=["User object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@users_cb
 async def produce_user_baskets( token : str = Body(...)):
 
     responce = requests.post("http://user_service:8000/mongo_api/produce_user_baskets", 
@@ -100,7 +111,7 @@ async def produce_user_baskets( token : str = Body(...)):
 # методы работы с корзинами
 #===============================
 @app.post("/mongo_api/basket_create", tags=["Basket object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@baskets_cb
 async def basket_create(token : str = Body(...)):
     
     responce = requests.post("http://basket_service:8000/mongo_api/basket_create", 
@@ -109,7 +120,7 @@ async def basket_create(token : str = Body(...)):
 
 # общие данные о корзине
 @app.post("/mongo_api/get_basket_data", tags=["Basket object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@baskets_cb
 def get_basket_data(token : str = Body(...),
                     basket_id : str = Body(...)): 
     
@@ -120,7 +131,7 @@ def get_basket_data(token : str = Body(...),
 
 # что лежит в коризне
 @app.post("/mongo_api/get_basket_contents", tags=["Basket object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@baskets_cb
 def get_products_in_basket(token : str = Body(...),
                            basket_id : str = Body(...)): 
     
@@ -131,7 +142,7 @@ def get_products_in_basket(token : str = Body(...),
 
 # добавить товар в корзину
 @app.post("/mongo_api/basket_add_item", tags=["Basket object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@baskets_cb
 async def basket_add_item(  token : str = Body(...) ,
                             basket_id : str = Body(...) ,
                             product_id : str = Body(...),
@@ -146,7 +157,7 @@ async def basket_add_item(  token : str = Body(...) ,
 
 # поменять количество товара в корзине
 @app.post("/mongo_api/basket_mod_item", tags=["Basket object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@baskets_cb
 async def basket_mod_item(  token : str = Body(...) ,
                             basket_id : str = Body(...) ,
                             product_id : str = Body(...),
@@ -161,7 +172,7 @@ async def basket_mod_item(  token : str = Body(...) ,
 
 # удалить товар из корзины
 @app.post("/mongo_api/basket_remove_item", tags=["Basket object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@baskets_cb
 async def basket_remove_item(   token : str = Body(...) ,
                                 basket_id : str = Body(...) ,
                                 product_id : str = Body(...)):
@@ -174,7 +185,7 @@ async def basket_remove_item(   token : str = Body(...) ,
 
 # закрыть коризину (тут в теории информация должна передаваться в сервис оплаты и доставки)
 @app.post("/mongo_api/basket_finalize", tags=["Basket object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@baskets_cb
 async def basket_finalize(  token : str = Body(...),
                             basket_id : str = Body(...)):
     
@@ -188,7 +199,7 @@ async def basket_finalize(  token : str = Body(...),
 # методы работы с продуктами
 #===============================
 @app.post("/mongo_api/add_new_product", tags=["Product object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@products_cb
 async def add_new_product(  product_name : str = Body(...),
                             product_price : int = Body(...),
                             product_amount : int = Body(...)):
@@ -200,17 +211,17 @@ async def add_new_product(  product_name : str = Body(...),
     return json.loads(responce.text)
 
 @app.get("/mongo_api/get_all_available_items_list", tags=["Product object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@products_cb
 async def get_all_available_items_list():
     return json.loads(requests.get("http://product_service:8000/mongo_api/get_all_available_items_list").text)
 
 @app.get("/mongo_api/get_product_data", tags=["Product object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@products_cb
 async def get_product_data(product_id):
     return json.loads(requests.get(url = "http://product_service:8000/mongo_api/get_product_data", params = {"product_id" : product_id}).text)
 
 @app.post("/mongo_api/change_product_data", tags=["Product object methods"])
-@circuit(failure_threshold=2, recovery_timeout = 60, fallback_function = fallback)
+@products_cb
 async def add_new_product(  product_id : str = Body(...),
                             new_product_name : str = Body(None),
                             new_product_price : int = Body(None),
