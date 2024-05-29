@@ -1,0 +1,72 @@
+version: "2.0"
+services:
+  mongo:
+    image: mongo:4.4.6
+    container_name: mongo
+    environment:
+        - MONGO_INITDB_ROOT_USERNAME=root
+        - MONGO_INITDB_ROOT_PASSWORD=1234
+    restart: unless-stopped
+    ports:
+      - "27020:27017"
+    volumes:
+      - ./_database/db:/data/db
+      - ./_database/dev.archive:/Databases/dev.archive
+      - ./_database/production:/Databases/production
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "shop_db"
+      POSTGRES_USER: "mxcitn"
+      POSTGRES_PASSWORD: "1234"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./:/docker-entrypoint-initdb.d
+      - /_database/pg:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./_database/redis:/root/redis
+    environment:
+      - REDIS_PORT=6379
+  
+  user_service:
+    build: ./users_service
+    ports:
+      - "8001:8000"
+    depends_on:
+      - redis
+      - mongo
+
+  product_service:
+    build: ./products_service
+    ports:
+      - "8002:8000"
+    depends_on:
+      - mongo
+
+  basket_service:
+    build: ./baskets_service
+    ports:
+      - "8003:8000"
+    depends_on:
+      - mongo
+
+  gateway:
+    build: ./api_gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - user_service
+      - product_service
+      - basket_service
