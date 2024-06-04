@@ -1,19 +1,27 @@
-## Лабораторная работа 2
+## Лабораторная работа 5
 
-### Задание
+### Результат работы wrk
 
-    Данные должны храниться в СУБД PostgreSQL;
-    Должны быть созданы таблицы для каждой сущности из вашего задания;
-    Интерфейс к сущностям должен предоставляться в соответствии со стилем REST;
-    API должен быть специфицирован в OpenAPI 3.0 (должен хранится в index.yaml);
-    Должен быть создан скрипт по созданию базы данных и таблиц, а также наполнению СУБД тестовыми значениями;
-    Для сущности, отвечающей за хранение данных о пользователе (клиенте), для пользователей должен быть реализован интерфейс поиска по маске фамилии и имени, а также стандартные CRUD операции.
-    Данные о пользователе должны включать логин и пароль. Пароль должен храниться в закрытом виде (хэширован)
+Запуск с кэшем
 
-### Результаты
+    Running 30s test @ http://localhost:8000
+      12 threads and 400 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     1.17s   529.27ms   1.99s    61.38%
+        Req/Sec    26.33     22.85   121.00     67.18%
+      2872 requests in 30.09s, 2.03MB read
+      Socket errors: connect 0, read 0, write 0, timeout 2683
+    Requests/sec:     95.43
+    Transfer/sec:     69.21KB
 
-    Скриат, создающий таблицы лежит в ./create_tables.sql
-    Скрипт, заполняющий БД лежит в ./initialize.py
-    Исходный код api лежит в ./rdb_service/application_data_interface.py
-    При выполнении docker compose up интерфейс доступен по localhost:8000, документация в формате OpenAPI 3.0 по http://localhost:8000/docs#/
-    Отдельно документация лежит в ./rdb_service/index.yaml
+Запуск без кеша
+
+    Running 30s test @ http://localhost:8000
+      12 threads and 400 connections
+      Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     1.04s   520.47ms   1.97s    58.46%
+        Req/Sec    17.81     15.70    80.00     66.98%
+      1170 requests in 30.09s, 850.80KB read
+      Socket errors: connect 0, read 0, write 0, timeout 1105
+    Requests/sec:     38.88
+    Transfer/sec:     28.27KB
